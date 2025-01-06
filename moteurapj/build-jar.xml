@@ -1,0 +1,93 @@
+<project name="deploy-ejb" default="deploy" basedir="./build-file">
+    <property environment="env"/>
+    <property name="deploy.dir" value="."/>
+    <property name="apj-warname" value="apj-war.war"/>
+	<property name="apjFront-warname" value="apjFront-war.war"/>
+    <property name="apj-jarname" value="apj-ejb.jar"/>
+    <property name="apj-earname" value="apj.ear"/>
+    <property name="srcejb-dir" value="./apj-ejb/src/java"/>
+    <property name="srcwar-dir" value="./apj-war/src/java"/>
+	<property name="srcwarFront-dir" value="./apjFront-war/src/java"/>
+    
+    <property name="build-apj-ejb_jar" value="${basedir}/apj-ejb_jar" />
+    <property name="build-apj-lib" value="${basedir}/lib" />
+	<property name="build-apjFront-lib" value="${basedir}/lib" />
+    
+    <property name="buildEar.dir" value="${basedir}/ear"/>
+    <property name="webcontent.dir" value="../apj-war/web"/>
+	<property name="webcontentFront.dir" value="../apjFront-war/web"/>
+    <property name="projects_lib" value="/home/tahina/git/gestion-station/gestion-station/build-file/lib" />
+    <path id="classpath">
+        <fileset dir="../lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+    <target name="clean" >
+        <echo>  ------------------ START ---------------- </echo>
+            <echo>JDK ${ant.java.version}  ${ant.version}  </echo>
+        <echo> clean </echo>
+        
+        <delete file="${build-apj-ejb_jar}" />
+        <delete file="${build-apj-lib}" />
+        <delete file="${basedir}/${apj-earname}" />
+		<delete file="${basedir}/${apjFront-earname}" />
+        <delete file="${buildEar.dir}/${apj-earname}" />
+		<delete file="${buildEar.dir}/${apjFront-earname}" />
+		
+        <echo> clean done </echo>
+    </target>
+	
+    <tstamp>
+	  <format property="dateDuJour" pattern="dd/MM/yyyy hh:mm aa" />
+	</tstamp>
+	
+    <target name="init" depends="clean">
+        <echo> initialisation ${dateDuJour} </echo>
+		
+		
+        <mkdir dir="${build-apj-ejb_jar}"/>
+        <mkdir dir="${build-apj-ejb_jar}/META-INF"/>
+		
+        <echo file="${webcontent.dir}/dateBuild.txt" append="false" message="${dateDuJour}" />
+		
+		
+        
+        <echo>  initialisation done </echo>
+    </target>
+	
+    <target name="compile" depends="init">
+        <echo> compilation </echo>	
+        <javac srcdir="../apj-ejb/src/java" destdir="${build-apj-ejb_jar}" nowarn="true" debug="true" debuglevel="lines,vars,source" deprecation="off" classpathref="classpath" includeantruntime="false" encoding="iso-8859-1">
+            <compilerarg value="-Xdoclint:none"/>
+        </javac>
+        <!--<copy todir="${build-apj-ejb_jar}">
+            <fileset dir="../apj-ejb/src/java" includes="**/*" />
+        </copy>-->
+        <copy todir="${build-apj-ejb_jar}/i18n">
+            <fileset dir="../apj-ejb/src/java/i18n" includes="**/*.properties" />
+        </copy>
+        <copy todir="${build-apj-ejb_jar}/META-INF">
+            <fileset dir="../apj-ejb/src/ressources/META-INF" />
+        </copy>
+        <echo> compilation done </echo>	
+    </target>
+    
+    <target name="buildEjbJar" depends="compile">
+        <echo>Build EJB JAR</echo>
+        <jar basedir="${build-apj-ejb_jar}" destfile="${buildEar.dir}/${apj-jarname}" />
+        <echo>End Build EJB JAR</echo>
+    </target>
+    <target name="deploy" depends="buildEjbJar">
+        <taskdef name="for" classname="net.sf.antcontrib.logic.For" classpath="${basedir}/ant-contrib-0.6.jar" />
+        <for param="direct" list="${projects_lib}" delimiter=";">
+            <sequential>
+                <copy todir="@{direct}">
+                    <fileset dir="../lib" includes="*.jar" excludes="ant-contrib-0.6.jar"/>
+                </copy>
+                <copy todir="@{direct}">
+                    <fileset dir="ear" includes="*.jar" />
+                </copy>
+            </sequential>
+        </for>
+    </target>
+</project>

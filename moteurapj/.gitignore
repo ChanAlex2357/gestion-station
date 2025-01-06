@@ -1,0 +1,9 @@
+**/*.class
+/output
+build-file/
+module.xml
+**/dateBuild.txt
+.idea/
+demo/
+modules/
+/apj-ejb/nbproject/private/

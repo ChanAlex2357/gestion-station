@@ -1,0 +1,8 @@
+build-file/
+
+/station-ejb/build
+/station-ejb/nbproject
+station-ejb/nbproject/build-impl.xml
+/station-war/nbproject
+station-war/web/pages/fichierCentre.txt
+build.xml

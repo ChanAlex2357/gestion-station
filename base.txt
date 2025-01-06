@@ -1,0 +1,12 @@
+CREATE USER gallois IDENTIFIED BY gallois;
+
+GRANT ALL PRIVILEGES TO gallois;
+
+GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE PROCEDURE, CREATE SEQUENCE TO gallois;
+
+GRANT DBA TO gallois;
+
+ALTER USER gallois QUOTA UNLIMITED ON users;
+
+--file le lien makany @ sbase.dmp tsy azo asina espace
+imp gallois/gallois@DBCOURS file="E:\base.dmp" log=logfile.log full=y
